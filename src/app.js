@@ -2,15 +2,15 @@ const express = require("express");
 const app = express();
 
 
-const {adminAuth, userAuth} = require("./middlewares/auth");
+// const {adminAuth, userAuth} = require("./middlewares/auth");
 
 
-app.use("/admin", adminAuth);
+// app.use("/admin", adminAuth);
 
 
-app.post("user/login", ()=> {
-  res.send("User logged in successfully!");
-});
+// app.post("user/login", ()=> {
+//   res.send("User logged in successfully!");
+// });
 
 // app.use("/admin", (req,res,next)=>{
 //   const token = "xyzalksdkd";
@@ -24,36 +24,55 @@ app.post("user/login", ()=> {
 // })
 
 
-app.get("/user",userAuth,(req,res)=>{
+// app.get("/user",userAuth,(req,res)=>{
+//   res.send("User Data Sent");
+// })
+
+app.get("/getUserData",(req,res)=>{
+try{  throw new Error("akdlf");
   res.send("User Data Sent");
+
+}catch{
+  res.status(500).send("Some error "); 
+}
+  // Logic of DB call and get user data
+
+
 })
 
+
+app.use("/",(err, req, res, next)=>{
+if(err){
+  res.status(500).send("something went wrong");
+}
+
+ });
 // app.use("/user",(req,res)=>{
 //   res.send("Hahaha");
 
 // });
-app.get("/admin/getAllData",(req, res)=>{
+// app.get("/admin/getAllData",(req, res)=>{
 
-  res.send("All Data Sent");
-  // Check if the request is authorized
-  // const token = "xyzasf";
-  // const isAdminAuthorized = token === "xyz";
-  // if(isAdminAuthorized){
-  //   res.send("All Data Sent");
+//   res.send("All Data Sent");
+//   // Check if the request is authorized
+//   // const token = "xyzasf";
+//   // const isAdminAuthorized = token === "xyz";
+//   // if(isAdminAuthorized){
+//   //   res.send("All Data Sent");
 
-  // }else{
-  //   res.status(401).send("Unauthorized request");
-  // }
+//   // }else{
+//   //   res.status(401).send("Unauthorized request");
+//   // }
 
-  // res.send("All Data Sent");  
-});
+//   // res.send("All Data Sent");  
+// });
 
 
-app.get("/admin/deleteUser",(req, res)=>{
-  // Logic of fetching all data
+// app.get("/admin/deleteUser",(req, res)=>{
+//   // Logic of fetching all data
 
-  res.send("Deleted a User");  
-})
+//   res.send("Deleted a User");  
+// })
 
 // This will only handle GET call to /user
 // app.get("/ab*cd", (req,res)=>{
