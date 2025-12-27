@@ -1,5 +1,48 @@
 const express = require("express");
+
+const connectDB = require("./config/database");
+
 const app = express();
+
+const User = require("./models/user");
+const user = require("./models/user");
+
+
+app.post("/signup",async(req, res)=>{
+  const user = new User({
+    firstName :"Virat",
+    lastName :  "Kohli",
+     emailId: "virat@kohli.com",
+     password :"virat@123"
+  });
+
+  try{
+ await user.save();
+  res.send("User Added successfully!!");
+  }catch(err){
+    res.status(400).send("Error saving the user:"+ err.message);
+  }
+ 
+  // creating a new instance of the User model 
+  // const user = new  User(userObj);
+
+
+
+
+});
+
+
+
+connectDB().then(
+  ()=>{
+    console.log("Database connection established...");
+    app.listen(7777,()=>{
+  console.log("Server is successfuly listening on port 7777...");
+});
+  }
+).catch(err =>{
+   console.error("Database cannot be connected!! ");
+});
 
 
 // const {adminAuth, userAuth} = require("./middlewares/auth");
@@ -28,25 +71,25 @@ const app = express();
 //   res.send("User Data Sent");
 // })
 
-app.get("/getUserData",(req,res)=>{
-try{  throw new Error("akdlf");
-  res.send("User Data Sent");
+// app.get("/getUserData",(req,res)=>{
+// try{  throw new Error("akdlf");
+//   res.send("User Data Sent");
 
-}catch{
-  res.status(500).send("Some error "); 
-}
+// }catch{
+//   res.status(500).send("Some error "); 
+// }
   // Logic of DB call and get user data
 
 
-})
+// })
 
 
-app.use("/",(err, req, res, next)=>{
-if(err){
-  res.status(500).send("something went wrong");
-}
+// app.use("/",(err, req, res, next)=>{
+// if(err){
+//   res.status(500).send("something went wrong");
+// }
 
- });
+//  });
 // app.use("/user",(req,res)=>{
 //   res.send("Hahaha");
 
@@ -163,8 +206,6 @@ if(err){
 // }
 // )
 
-app.listen(7777,()=>{
-  console.log("Server is successfuly listening on port 7777...");
-});
+
 
 //  console.log("Starting a new project!");
