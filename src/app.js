@@ -14,13 +14,43 @@ const app = express();
 // });
 
 
-app.get("/user", (req,res)=>{
+// app.get("/user", (req,res)=>{
   
-  console.log(req.query);
-  res.send({firstName:"Akshay", lastName:"Saini"});
-});
+//   console.log(req.query);
+//   res.send({firstName:"Akshay", lastName:"Saini"});
+// });
+
+// app.use("/route", rh,[rh2, rh3], rh4,rh5 );
 
 
+app.use("/user",[(req,res, next)=>{
+  //Route Handler
+  //  res.send("Route Handler 1");
+  console.log("Handling the route user!!" );
+  next();
+  // res.send("Route Handler 1");  
+},
+(req, res, next)=>{
+  console.log("Handling the route user 2!! ");
+  // res.send("2nd Response!!");
+  next();
+}],
+(req, res,next)=>{
+  console.log("Handling the route user 3!! ");
+  // res.send("3rd Response!!");
+next();
+},
+(req, res, next )=>{
+  console.log("Handling the route user 4!! ");
+  // res.send("4th Response!!");
+  next();
+},
+(req, res, next )=>{
+  console.log("Handling the route user 5!! ");
+  res.send("5th Response!!");
+  // next();
+}
+);
 // app.post("/user", (req,res)=>{
 //   // console.log("Save Data to the database");
 //   // Save data
