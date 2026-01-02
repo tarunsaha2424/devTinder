@@ -3,19 +3,49 @@ const express = require("express");
 const connectDB = require("./config/database");
 
 const app = express();
-
+const {userAuth} = require("./middlewares/auth.js");
 const User = require("./models/user");
 const user = require("./models/user");
+const {validateSignUpData} = require("./utils/validation")
+const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+ const authRouter = require("./routes/auth");
+ const profileRouter = require("./routes/profile");
+ const requestRouter = require("./routes/requests");
+
 
 
 app.use(express.json());
+app.use(cookieParser());
+
+
+
+app.use("/",authRouter);
+app.use("/",profileRouter);
+app.use("/",requestRouter);
 
 app.post("/signup",async(req, res)=>{
-  console.log(req.body);
+  // console.log(req.body);
+try{
+  // Validation of data
+  validateSignUpData(req);
+  const {firstName, lastName, emailId, password} = req.body;
 
 
+  // Encrypt the password
+const passwordHash = await bcrypt.hash(password,10); 
+console.log(passwordHash);
+
+
+  // Creating a new instance of the User model
   const user = new User(
-    req.body
+   {
+    firstName,
+    lastName,
+    emailId,
+    password: passwordHash
+   }
   );
 
   // const user = new User({
@@ -25,11 +55,11 @@ app.post("/signup",async(req, res)=>{
   //    password :"virat@123"
   // });
 
-  try{
+  
  await user.save();
   res.send("User Added successfully!!");
   }catch(err){
-    res.status(400).send("Error saving the user:"+ err.message);
+    res.status(400).send("ERROR :"+ err.message);
   }
  
   // creating a new instance of the User model 
@@ -38,6 +68,77 @@ app.post("/signup",async(req, res)=>{
 
 
 
+});
+
+
+app.post("/login", async(req,res)=>{
+  try{
+    const {emailId, password}= req.body;
+
+    const user = await User.findOne({emailId: emailId});
+    if(!user){
+      throw new Error("Invalid credentials");
+    }
+
+    // const isPasswordValid = await bcrypt.compare(password,user.password);
+const isPasswordValid = await user.validatePassword( password);
+    if(isPasswordValid){
+
+      // Create a JWT Token
+     
+      // console.log(token);
+      // Add the token to cookie and send the response to the user
+
+      const token = await user.getJWT();
+
+      res.cookie("token",token,{expires: new Data(Date.now()+ 8*3600000),
+
+      });
+
+
+ 
+
+      res.send("Login Successful!!");
+    }
+    else{
+      throw new Error("Password is not correct");
+    }
+
+  }catch(err){
+    res.status(400).send("ERROR : "+ err.message);
+  }
+});
+
+
+app.get("/profile",userAuth,async(req,res)=>{
+try{
+  const user = req.user;
+  // if(!user){
+  //   throw new Error("User does not exist");
+  // }
+  res.send(user);
+}catch(err){
+  res.status(400).send("ERROR :"+ err.message);
+}
+//   const cookies = req.cookies;
+//   const {token}= cookies;
+//   if(!token){
+//     throw new Error("Invalid Token");
+//   }
+//   //Validate my token
+// const decodedMessage
+// = await jwt.verify(token, "DEV@Tinder$790");
+
+// // console.log(decodedMessage);
+// const { _id} = decodedMessage;
+// // console.log("Logged In user is :" + _id);
+
+// const user = await User.findById(_id);
+// if(!user){
+//   throw new Error("User does not exist");
+// }
+//   // console.log(cookies);
+//   res.send(user);
 });
 
 
@@ -123,6 +224,15 @@ res.send("User updated successfully");
   }catch(err){
     res.status(400).send("UPDATE FAILED:"+ err.message);
   }
+})
+
+app.post("/sendConnectionRequest",userAuth, async(req,res)=>{
+// Sending a connection request
+console.log("Sending a connection request");
+
+// res.send("Connection Request Sent!!")
+
+res.send(user.firstName + " send the connect request!");
 })
 
 
