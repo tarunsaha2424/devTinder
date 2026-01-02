@@ -62,7 +62,7 @@ authRouter.post("/login", async(req,res)=>{
     }
 
     // const isPasswordValid = await bcrypt.compare(password,user.password);
-const isPasswordValid = await user.validatePassword( password);
+const isPasswordValid = await user.validatePassword(password);
     if(isPasswordValid){
 
       // Create a JWT Token
@@ -90,5 +90,11 @@ const isPasswordValid = await user.validatePassword( password);
   }
 });
 
+authRouter.post("/logout", async (req,res)=>{
+  res.cookie("token",null,{
+    expires: new Date(Date.now()),
+  });
+  res.send("Logout Successful!!");
+}); 
 
 module.exports = authRouter;
